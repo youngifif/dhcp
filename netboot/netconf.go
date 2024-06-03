@@ -182,7 +182,7 @@ func IfUp(ifname string, timeout time.Duration) (_ *net.Interface, err error) {
 
 // ConfigureInterface configures a network interface with the configuration held by a
 // NetConf structure
-func ConfigureInterface(ifname string, netconf *NetConf) (err error) {
+func ConfigureInterface(ifname string, netconf *NetConf) (returnErr error) {
 	iface, err := net.InterfaceByName(ifname)
 	if err != nil {
 		return err
@@ -192,8 +192,9 @@ func ConfigureInterface(ifname string, netconf *NetConf) (err error) {
 		return err
 	}
 	defer func() {
-		if cerr := rt.Close(); err != nil {
-			err = cerr
+		cerr := rt.Close()
+		if returnErr == nil {
+			returnErr = cerr
 		}
 	}()
 	// configure interfaces
